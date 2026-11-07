@@ -39,5 +39,5 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
-          tags: ly2314/hath:${{ env.HATH_VERSION }}${{ steps.meta.outputs.tags }}, ly2314/hath:latest
+          tags: ly2314/hath:${{ env.HATH_VERSION }}_${{ steps.meta.outputs.tags }}, ly2314/hath:latest
           build-args: HATH_VERSION=${{ env.HATH_VERSION }}
