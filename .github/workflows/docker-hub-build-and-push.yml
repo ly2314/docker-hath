@@ -27,7 +27,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
           tags: ly2314/hath:${{ env.TAG }}, ly2314/hath:latest
           build-args: HATH_VERSION=${{ env.HATH_VERSION }}
