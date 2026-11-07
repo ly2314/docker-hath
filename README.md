@@ -1,7 +1,8 @@
-[hub]: https://hub.docker.com/r/frosty5689/hath/
+[hub]: https://hub.docker.com/r/ly2314/hath/
 
-# frosty5689/hath
-[![](https://images.microbadger.com/badges/version/frosty5689/hath.svg)](https://microbadger.com/images/frosty5689/hath "Get your own version badge on microbadger.com")[![](https://images.microbadger.com/badges/image/frosty5689/hath.svg)](https://microbadger.com/images/frosty5689/hath "Get your own image badge on microbadger.com")[![Docker Pulls](https://img.shields.io/docker/pulls/frosty5689/hath.svg)][hub][![Docker Stars](https://img.shields.io/docker/stars/frosty5689/hath.svg)][hub]
+# ly2314/hath
+- Forked from frosty5689/hath
+- Updated base image to use eclipse-temurin:8-jre
 
 ## Usage
 
@@ -63,9 +64,3 @@ docker run \
   * `--disable-file-verification` - disable this verification check starting the client. Note however that if the monitoring system detects corrupted files in your cache, your client will be flagged for a full cache verification on next startup, which can take a long time, so it is recommended to leave it enabled unless the client is actually CPU-starved.
   * more that may not be documented here, feel free to create PR to add more
 * `-p YOUR_HATH_PORT/tcp` - The port used by H@H as set in the configuration page. The container port should match the host port.
-
-
-## Buy me a coffee
-If you appreciate what I do and would like to show some support, buy me a coffee :)
-
-<a href="https://www.buymeacoffee.com/frosty5689" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
