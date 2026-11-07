@@ -9,8 +9,6 @@ RUN apk add --no-cache --update \
     tzdata \
  && update-ca-certificates
 
-
-
 RUN apk add --no-cache --update --virtual build-dependencies wget unzip && \
     wget -O /tmp/hath-$HATH_VERSION.zip https://repo.e-hentai.org/hath/HentaiAtHome_$HATH_VERSION.zip && \
     ls -l /tmp && \
