@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - "master"
+  image_version:
+    names:
+      - "eclipse-temurin:8-jre-alpine"
+
 env:
   HATH_VERSION: 1.6.6
   TAG: 1.6.6-261107
