@@ -10,7 +10,6 @@ on:
 
 env:
   HATH_VERSION: 1.6.6
-  TAG: 1.6.6-261107
 
 jobs:
   docker:
@@ -33,5 +32,5 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
-          tags: ly2314/hath:${{ env.TAG }}, ly2314/hath:latest
+          tags: ly2314/hath:${{ env.HATH_VERSION }}, ly2314/hath:latest
           build-args: HATH_VERSION=${{ env.HATH_VERSION }}
