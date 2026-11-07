@@ -1,4 +1,4 @@
-FROM eclipse-temurin:8-jre-alpine
+FROM eclipse-temurin:8-jre
 
 LABEL maintainer ly2314 <ly2314@gmail.com>
 
@@ -9,13 +9,13 @@ RUN apk add --no-cache --update \
     tzdata \
  && update-ca-certificates
 
-RUN apk add --no-cache --update --virtual build-dependencies wget unzip && \
+RUN apt update && apt install wget unzip && \
     wget -O /tmp/hath-$HATH_VERSION.zip https://repo.e-hentai.org/hath/HentaiAtHome_$HATH_VERSION.zip && \
     ls -l /tmp && \
     mkdir -p /opt/hath /hath && \
     unzip /tmp/hath-$HATH_VERSION.zip -d /opt/hath && \
     rm /tmp/hath-$HATH_VERSION.zip && \
-    apk del build-dependencies wget unzip
+    apt remove wget unzip
 
 ADD run/* /opt/hath/
 
