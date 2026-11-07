@@ -1,6 +1,6 @@
-FROM openjdk:8u212-jre-alpine
+FROM ibmjava:jre-alpine
 
-LABEL maintainer frosty5689 <frosty5689@gmail.com>
+LABEL maintainer ly2314 <ly2314@gmail.com>
 
 ARG HATH_VERSION
 
