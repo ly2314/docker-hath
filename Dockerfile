@@ -1,4 +1,4 @@
-FROM openjdk:8-jre-alpine
+FROM openjdk:8u212-jre-alpine
 
 LABEL maintainer ly2314 <ly2314@gmail.com>
 
