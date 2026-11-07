@@ -17,6 +17,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ly2314/hath
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ env.HATH_VERSION }}_{{date 'YYYYMMDD'}}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
@@ -32,5 +40,5 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
-          tags: ly2314/hath:${{ env.HATH_VERSION }}_$(date 'YYYYMMDD'), ly2314/hath:latest
+          tags: ${{ steps.meta.outputs.tags }}
           build-args: HATH_VERSION=${{ env.HATH_VERSION }}
