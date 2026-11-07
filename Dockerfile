@@ -4,10 +4,6 @@ LABEL maintainer ly2314 <ly2314@gmail.com>
 
 ARG HATH_VERSION
 
-RUN apt update && apt install \
-    ca-certificates \
-    tzdata
-
 RUN apt update && apt install wget unzip && \
     wget -O /tmp/hath-$HATH_VERSION.zip https://repo.e-hentai.org/hath/HentaiAtHome_$HATH_VERSION.zip && \
     ls -l /tmp && \
