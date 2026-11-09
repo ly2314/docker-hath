@@ -20,12 +20,17 @@ jobs:
       - name: Fetch Latest Docker Image Digest (linux/amd64)
         id: docker_check
         run: |
-          # Query the public Docker Hub API and filter explicitly for linux/amd64
-          DIGEST=$(curl -s "https://docker.com" \
-            | jq -r '.images[] | select(.os=="linux" and .architecture=="amd64") | .digest')
+          IMAGE_NAME="eclipse-temurin"
+          IMAGE_TAG="8-jre"
+          
+          API_URL="https://docker.com{IMAGE_NAME}/tags/${IMAGE_TAG}"
+          
+          echo "Querying: ${IMAGE_NAME}:${IMAGE_TAG} (linux/amd64)..."
+          
+          DIGEST=$(curl -s "$API_URL" | jq -r '.images[] | select(.os=="linux" and .architecture=="amd64") | .digest')
           
           if [ "$DIGEST" = "null" ] || [ -z "$DIGEST" ]; then
-            echo "Error: Failed to fetch linux/amd64 image digest from Docker Hub."
+            echo "Error: Failed to extract a valid linux/amd64 image digest from Docker Hub."
             exit 1
           fi
           
