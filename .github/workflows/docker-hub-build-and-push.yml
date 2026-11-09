@@ -21,8 +21,8 @@ jobs:
         id: docker_check
         run: |
           # Official images like eclipse-temurin reside in the 'library/' namespace
-          REPO="library/eclipse-temurin"
-          TAG="8-jre"
+          REPO="eclipse-temurin/8-jre"
+          TAG="latest"
           
           # Fetch authentication token
           TOKEN=$(curl -s "https://docker.io" | jq -r '.token')
