@@ -17,22 +17,20 @@ jobs:
     outputs:
       should_run: ${{ steps.check_update.outputs.updated }}
     steps:
-      - name: Fetch Latest Docker Image Digest
+      - name: Fetch Latest Docker Image Digest (linux/amd64)
         id: docker_check
         run: |
-          # Official images like eclipse-temurin reside in the 'library/' namespace
-          REPO="library/eclipse-temurin"
-          TAG="8-jre"
+          # Query the public Docker Hub API and filter explicitly for linux/amd64
+          DIGEST=$(curl -s "https://docker.com" \
+
+            | jq -r '.images[] | select(.os=="linux" and .architecture=="amd64") | .digest')
           
-          # Fetch authentication token
-          TOKEN=$(curl -s "https://docker.io" | jq -r '.token')
+          if [ "$DIGEST" = "null" ] || [ -z "$DIGEST" ]; then
+            echo "Error: Failed to fetch linux/amd64 image digest from Docker Hub."
+            exit 1
+          fi
           
-          # Fetch manifest digest
-          DIGEST=$(curl -s -H "Authorization: Bearer $TOKEN" \
-            -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
-            "https://docker.io" | jq -r '.config.digest')
-          
-          echo "Latest digest: $DIGEST"
+          echo "Latest linux/amd64 digest: $DIGEST"
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
       # Check if this digest has been built before
