@@ -1,19 +1,70 @@
 name: ci
 
 on:
+  schedule:
+    - cron: '0 * * * *' # Runs every hour
   push:
     branches:
       - "master"
+  workflow_dispatch: # Allows manual triggering from the GitHub Actions UI
 
 env:
   HATH_VERSION: 1.6.6
 
 jobs:
+  check-upstream:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check_update.outputs.updated }}
+    steps:
+      - name: Fetch Latest Docker Image Digest
+        id: docker_check
+        run: |
+          # Official images like eclipse-temurin reside in the 'library/' namespace
+          REPO="library/eclipse-temurin"
+          TAG="8-jre"
+          
+          # Fetch authentication token
+          TOKEN=$(curl -s "https://docker.io" | jq -r '.token')
+          
+          # Fetch manifest digest
+          DIGEST=$(curl -s -H "Authorization: Bearer $TOKEN" \
+            -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
+            "https://docker.io" | jq -r '.config.digest')
+          
+          echo "Latest digest: $DIGEST"
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      # Check if this digest has been built before
+      - name: Compare with Cache
+        id: cache_compare
+        uses: actions/cache@v4
+        with:
+          path: .docker_digest_cache
+          key: docker-digest-${{ steps.docker_check.outputs.digest }}
+
+      # Determine whether to proceed or exit
+      - name: Determine if Update is Needed
+        id: check_update
+        run: |
+          if [ "${{ steps.cache_compare.outputs.cache-hit }}" == "true" ] && [ "${{ github.event_name }}" == "schedule" ]; then
+            echo "No new upstream version found. Skipping build."
+            echo "updated=false" >> $GITHUB_OUTPUT
+          else
+            echo "New version detected (or triggered manually/via push)! Proceeding..."
+            echo "updated=true" >> $GITHUB_OUTPUT
+            # Create cached file so future cron runs recognize this digest
+            echo "${{ steps.docker_check.outputs.digest }}" > .docker_digest_cache
+          fi
+
   docker:
     runs-on: ubuntu-latest
+    needs: check-upstream
+    if: needs.check-upstream.outputs.should_run == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        
       - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -22,15 +73,19 @@ jobs:
           tags: |
             type=raw,value=latest
             type=raw,value=${{ env.HATH_VERSION }}_{{date 'YYYYMMDD'}}
+            
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
+        
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
