@@ -22,7 +22,6 @@ jobs:
         run: |
           # Query the public Docker Hub API and filter explicitly for linux/amd64
           DIGEST=$(curl -s "https://docker.com" \
-
             | jq -r '.images[] | select(.os=="linux" and .architecture=="amd64") | .digest')
           
           if [ "$DIGEST" = "null" ] || [ -z "$DIGEST" ]; then
