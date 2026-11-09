@@ -4,9 +4,8 @@ on:
   push:
     branches:
       - "master"
-  image_version:
-    names:
-      - "eclipse-temurin:8-jre"
+  schedule:
+    - cron: '0 * * * *'
 
 env:
   HATH_VERSION: 1.6.6
@@ -17,6 +16,41 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Fetch Latest Docker Image Digest
+        id: docker_check
+        run: |
+          # Replace 'library/ubuntu' and 'latest' with your target repo and tag
+          REPO="eclipse-temurin:8-jre"
+          TAG="latest"
+          
+          # Get token from Docker Hub Registry
+          TOKEN=$(curl -s "https://docker.io" | jq -r '.token')
+          
+          # Get image digest
+          DIGEST=$(curl -s -H "Authorization: Bearer $TOKEN" \
+            -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
+            "https://docker.io" | jq -r '.config.digest')
+          
+          echo "Latest digest: $DIGEST"
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+      - name: Compare with Cache
+        id: cache_compare
+        uses: actions/cache@v4
+        with:
+          path: .docker_digest_cache
+          key: docker-digest-${{ steps.docker_check.outputs.digest }}
+      - name: Determine if Update is Needed
+        id: check_update
+        run: |
+          if [ "${{ steps.cache_compare.outputs.cache-hit }}" == "true" ]; then
+            echo "No new version found."
+            echo "updated=false" >> $GITHUB_OUTPUT
+          else
+            echo "New version detected!"
+            echo "updated=true" >> $GITHUB_OUTPUT
+            # Create the file so it gets cached on successful workflow completion
+            echo "${{ steps.docker_check.outputs.digest }}" > .docker_digest_cache
+          fi
       - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v5
