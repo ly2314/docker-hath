@@ -23,7 +23,7 @@ jobs:
           IMAGE_NAME="eclipse-temurin"
           IMAGE_TAG="8-jre"
           
-          API_URL="https://docker.com{IMAGE_NAME}/tags/${IMAGE_TAG}"
+          API_URL="https://docker.com/_/{IMAGE_NAME}/tags/${IMAGE_TAG}"
           
           echo "Querying: ${IMAGE_NAME}:${IMAGE_TAG} (linux/amd64)..."
           
