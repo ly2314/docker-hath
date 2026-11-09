@@ -17,47 +17,43 @@ jobs:
     outputs:
       should_run: ${{ steps.check_update.outputs.updated }}
     steps:
-      - name: Fetch Latest Docker Image Digest (linux/amd64)
-        id: docker_check
-        run: |
-          IMAGE_NAME="eclipse-temurin"
-          IMAGE_TAG="8-jre"
-          
-          API_URL="https://docker.com/_/{IMAGE_NAME}/tags/${IMAGE_TAG}"
-          
-          echo "Querying: ${IMAGE_NAME}:${IMAGE_TAG} (linux/amd64)..."
-          
-          DIGEST=$(curl -s "$API_URL" | jq -r '.images[] | select(.os=="linux" and .architecture=="amd64") | .digest')
-          
-          if [ "$DIGEST" = "null" ] || [ -z "$DIGEST" ]; then
-            echo "Error: Failed to extract a valid linux/amd64 image digest from Docker Hub."
-            exit 1
-          fi
-          
-          echo "Latest linux/amd64 digest: $DIGEST"
-          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+      #- name: Fetch Latest Docker Image Digest (linux/amd64)
+      #  id: docker_check
+      #  run: |
+      #    IMAGE_NAME="eclipse-temurin"
+      #    IMAGE_TAG="8-jre"    
+      #    API_URL="https://docker.com/_/{IMAGE_NAME}/tags/${IMAGE_TAG}"
+      #    echo "Querying: ${IMAGE_NAME}:${IMAGE_TAG} (linux/amd64)..."
+      #    DIGEST=$(curl -s "$API_URL" | jq -r '.images[] | select(.os=="linux" and .architecture=="amd64") | .digest')
+      #    if [ "$DIGEST" = "null" ] || [ -z "$DIGEST" ]; then
+      #     echo "Error: Failed to extract a valid linux/amd64 image digest from Docker Hub."
+      #     exit 1
+      #    fi
+      #    echo "Latest linux/amd64 digest: $DIGEST"
+      #    echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
       # Check if this digest has been built before
-      - name: Compare with Cache
-        id: cache_compare
-        uses: actions/cache@v4
-        with:
-          path: .docker_digest_cache
-          key: docker-digest-${{ steps.docker_check.outputs.digest }}
+      #- name: Compare with Cache
+      #  id: cache_compare
+      #  uses: actions/cache@v4
+      #  with:
+      #    path: .docker_digest_cache
+      #    key: docker-digest-${{ steps.docker_check.outputs.digest }}
 
       # Determine whether to proceed or exit
       - name: Determine if Update is Needed
         id: check_update
         run: |
-          if [ "${{ steps.cache_compare.outputs.cache-hit }}" == "true" ] && [ "${{ github.event_name }}" == "schedule" ]; then
-            echo "No new upstream version found. Skipping build."
-            echo "updated=false" >> $GITHUB_OUTPUT
-          else
-            echo "New version detected (or triggered manually/via push)! Proceeding..."
-            echo "updated=true" >> $GITHUB_OUTPUT
+           echo "updated=true" >> $GITHUB_OUTPUT
+      #    if [ "${{ steps.cache_compare.outputs.cache-hit }}" == "true" ] && [ "${{ github.event_name }}" == "schedule" ]; then
+      #      echo "No new upstream version found. Skipping build."
+      #      echo "updated=false" >> $GITHUB_OUTPUT
+      #    else
+      #      echo "New version detected (or triggered manually/via push)! Proceeding..."
+      #      echo "updated=true" >> $GITHUB_OUTPUT
             # Create cached file so future cron runs recognize this digest
-            echo "${{ steps.docker_check.outputs.digest }}" > .docker_digest_cache
-          fi
+      #      echo "${{ steps.docker_check.outputs.digest }}" > .docker_digest_cache
+      #    fi
 
   docker:
     runs-on: ubuntu-latest
