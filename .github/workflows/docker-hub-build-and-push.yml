@@ -21,8 +21,8 @@ jobs:
         id: docker_check
         run: |
           IMAGE_NAME="eclipse-temurin"
-          IMAGE_TAG="8-jre"    
-          API_URL="https://registry.hub.docker.com/v2/repositories/library/{IMAGE_NAME}/tags/{IMAGE_TAG}"
+          IMAGE_TAG="8-jre"
+          API_URL="https://registry.hub.docker.com/v2/repositories/library/eclipse-temurin/tags/8-jre"
           echo "Querying: ${IMAGE_NAME}:${IMAGE_TAG}..."
           DIGEST=$(curl --silent --location --url ${API_URL} | jq -r '.images[0].digest')
           echo $DIGEST
