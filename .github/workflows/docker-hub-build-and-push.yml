@@ -23,13 +23,14 @@ jobs:
           IMAGE_NAME="eclipse-temurin"
           IMAGE_TAG="8-jre"    
           API_URL="https://registry.hub.docker.com/v2/repositories/library/{IMAGE_NAME}/tags/{IMAGE_TAG}"
-          echo "Querying: ${IMAGE_NAME}:${IMAGE_TAG} (linux/amd64)..."
+          echo "Querying: ${IMAGE_NAME}:${IMAGE_TAG}..."
           DIGEST=$(curl --silent --location --url ${API_URL} | jq -r '.images[0].digest')
+          echo $DIGEST
           if [ "$DIGEST" = "null" ] || [ -z "$DIGEST" ]; then
-           echo "Error: Failed to extract a valid linux/amd64 image digest from Docker Hub."
+           echo "Error: Failed to extract a valid image digest from Docker Hub."
            exit 1
           fi
-          echo "Latest linux/amd64 digest: $DIGEST"
+          echo "Latest digest: $DIGEST"
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
       - name: Compare with Cache
         id: cache_compare
